@@ -97,6 +97,14 @@ class DeleteFileView(DestroyAPIView):
             default_storage.delete(instance.file.name)
         
         super().perform_destroy(instance)
+
+class ViewFiles(ListAPIView):
+    serializer_class = FileSerializer
+    queryset = UploadedFile.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return UploadedFile.objects.filter(user=self.request.user)
         
     
 
