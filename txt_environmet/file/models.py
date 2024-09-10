@@ -7,7 +7,7 @@ class UploadedFile(models.Model):
     content = models.TextField(blank=True, null=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    file = models.FileField(upload_to='uploads/', blank=True, null=True)\
+    file = models.FileField(upload_to='files/', blank=True, null=True)
     
     def __str__(self) -> str:
         return self.title

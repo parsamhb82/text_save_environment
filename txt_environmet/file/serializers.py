@@ -7,13 +7,9 @@ class FileSerializer(serializers.ModelSerializer):
         model = UploadedFile
         fields = '__all__'
 
-class UpdateCreatFileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UploadedFile
-        fields = ['title', 'content']
 
 class UploadFileSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = UploadedFile
-        fields = ['id', 'title', 'file']
+        fields = ['title', 'file']
