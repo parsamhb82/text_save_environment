@@ -77,6 +77,26 @@ class RetriveFileView(RetrieveAPIView):
         if request.user != uploaded_file.user:
             return Response({'error': 'You are not authorized to view this file'}, status=status.HTTP_403_FORBIDDEN)
         return super().get(request, *args, **kwargs)
+
+from django.core.files.storage import default_storage
+from rest_framework.exceptions import PermissionDenied
+class DeleteFileView(DestroyAPIView):
+    serializer_class = FileSerializer
+    queryset = UploadedFile.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        obj = super().get_object()
+        if obj.user != self.request.user:
+            raise PermissionDenied({'error': 'You are not authorized to delete this file'})
+        return obj
+
+    def perform_destroy(self, instance):
+        # Delete the file from the file system if it exists
+        if instance.file and default_storage.exists(instance.file.name):
+            default_storage.delete(instance.file.name)
+        
+        super().perform_destroy(instance)
         
     
 
