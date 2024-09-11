@@ -13,3 +13,9 @@ class UploadFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UploadedFile
         fields = ['title', 'file']
+
+class FileContentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UploadedFile
+        fields = ['content']

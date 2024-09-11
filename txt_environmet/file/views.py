@@ -105,6 +105,48 @@ class ViewFiles(ListAPIView):
 
     def get_queryset(self):
         return UploadedFile.objects.filter(user=self.request.user)
+
+from .serializers import FileContentSerializer
+from django.core.files.base import ContentFile
+class UpdateContentView(UpdateAPIView):
+    serializer_class = FileContentSerializer
+    queryset = UploadedFile.objects.all()
+    # permission_classes = [IsAuthenticated]
+
+    # def get_object(self):
+    #     obj = super().get_object()
+    #     if obj.user != self.request.user:
+    #         return Response({'error': 'You are not authorized to update this file'}, status=status.HTTP_403_FORBIDDEN)
+    
+    def perform_update(self, serializer):
+        # Get the instance of the file record
+        instance = self.get_object()
+
+        # Get the new content from the validated data
+        new_content = serializer.validated_data.get('content', '')
+
+        if new_content:
+            # Update the instance.content with the new content
+            instance.content = new_content
+            
+            # Delete the old file if it exists
+            if instance.file and default_storage.exists(instance.file.name):
+                default_storage.delete(instance.file.name)
+
+            # Create a new file from the content
+            new_file = ContentFile(new_content.encode('utf-8'))
+
+            # Save the new content to the same file name (rewrite the file)
+            instance.file.save(instance.file.name, new_file)
+            instance.content = new_content
+            instance.save()
+
+        # Save the instance (with the updated content)
+        serializer.save()
+            
+
+
+        
         
     
 
